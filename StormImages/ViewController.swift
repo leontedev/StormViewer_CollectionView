@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UITableViewController {
+class ViewController: UICollectionViewController {
     
     var pictures = [String]()
 
@@ -16,7 +16,6 @@ class ViewController: UITableViewController {
         super.viewDidLoad()
         
         title = "Storm Viewer"
-        navigationController?.navigationBar.prefersLargeTitles = true
         
         performSelector(inBackground: #selector(loadImages), with: nil)
     }
@@ -34,27 +33,26 @@ class ViewController: UITableViewController {
         
         pictures.sort { $0 < $1 }
         
-        tableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: false)
+        collectionView.performSelector(onMainThread: #selector(UICollectionView.reloadData), with: nil, waitUntilDone: false)
     }
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return pictures.count
     }
-
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Picture", for: indexPath)
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Storm", for: indexPath) as? StormCell else { fatalError("Unable to dequeue a Storm cell.") }
         
-        cell.textLabel?.text = pictures[indexPath.row]
+        cell.nameLabel.text = pictures[indexPath.row]
+        cell.imageView.image = UIImage(named: pictures[indexPath.row])
+        cell.imageView.layer.cornerRadius = 3
+        cell.layer.cornerRadius = 3
         
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let detailVC = storyboard?.instantiateViewController(withIdentifier: "Detail") as? DetailViewController {
         
             let image = pictures[indexPath.row]
@@ -64,8 +62,8 @@ class ViewController: UITableViewController {
             navigationController?.pushViewController(detailVC, animated: true)
         
         }
-        
     }
+
 
 }
 
